@@ -6,6 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -41,21 +42,21 @@ public class UserServiceImplRS implements UserServiceRS {
 //        file.createNewFile();
 
         Path path = Paths.get(FILE_PATH);
-
+        byte[] content = null;
         try (XSSFWorkbook workbook = new XSSFWorkbook();
-             OutputStream outputStream = Files.newOutputStream(path)) {
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
             workbook.createSheet("tam");
 
-            outputStream.flush();
 
             workbook.write(outputStream);
+            content = outputStream.toByteArray();
         }
 
 
 //        File file = new File(FILE_PATH);
 
-        Response.ResponseBuilder response = Response.ok(Files.readAllBytes(path));
+        Response.ResponseBuilder response = Response.ok(content);
         String download_filename = "cit1.xlsx";
         response.header("Content-Disposition", "attachment;filename= " + download_filename);
         return response.build();
